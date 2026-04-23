@@ -2,27 +2,7 @@
 
 Ubuntu-based development container images with Docker-in-Docker support, designed for use with [Coder](https://coder.com).
 
-## Images
 
-### `base` — Base Dev Container
-
-Ubuntu Noble (24.04) with Docker, build tools, and a `coder` user.
-
-**Pull:**
-
-```bash
-docker pull ghcr.io/kingpowerclick/coder:base
-```
-
-### `node` — Node.js Dev Container
-
-Extends `base` with Node.js (LTS) and Yarn.
-
-**Pull:**
-
-```bash
-docker pull ghcr.io/kingpowerclick/coder:node
-```
 
 ## What's Included
 
