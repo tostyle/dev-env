@@ -18,7 +18,7 @@
   outputs = { self, nixpkgs, flake-utils, home-manager }:
     let
       # ── Change these two values to match your machine ──────────────────────
-      mySystem  = "aarch64-darwin"; # or "x86_64-linux", "x86_64-darwin", etc.
+      mySystem  = "aarch64-linux"; # or "x86_64-linux", "aarch64-darwin", "x86_64-darwin"
       myUser    = "coder";  # result of `whoami`
       # ────────────────────────────────────────────────────────────────────────
 

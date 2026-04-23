@@ -4,7 +4,7 @@
 # Activate with:
 #   home-manager switch --flake .#<username>
 
-{ pkgs, myUser, ... }:
+{ pkgs, myUser, lib, ... }:
 
 {
   # ── Required home-manager settings ────────────────────────────────────────
@@ -15,16 +15,16 @@
   home.stateVersion  = "24.11"; # do not change after first switch
 
   # ── Git ───────────────────────────────────────────────────────────────────
-  programs.git = {
-    enable    = true;
-    userName  = "Your Name";
-    userEmail = "you@example.com";
+  # programs.git = {
+  #   enable    = true;
+  #   userName  = "Your Name";
+  #   userEmail = "you@example.com";
 
-    extraConfig = {
-      init.defaultBranch = "main";
-      pull.rebase        = true;
-    };
-  };
+  #   extraConfig = {
+  #     init.defaultBranch = "main";
+  #     pull.rebase        = true;
+  #   };
+  # };
 
   # ── Shell (zsh) ───────────────────────────────────────────────────────────
   programs.zsh = {
@@ -40,6 +40,17 @@
 
     envExtra = ''
       export KUBECONFIG="$HOME/.kube/config"
+      export PNPM_HOME="$HOME/.local/share/pnpm"
+      export PATH="$PNPM_HOME:$PATH"
+    '';
+  };
+
+  programs.bash = {
+    enable = true;
+    initExtra = ''
+      export PATH="$HOME/.nix-profile/bin:$PATH"
+      export PNPM_HOME="$HOME/.local/share/pnpm"
+      export PATH="$PNPM_HOME:$PATH"
     '';
   };
 
@@ -49,19 +60,48 @@
     jq
     curl
     htop
+    # ── dev tools (always available, not just in nix develop) ──────────────
+    podman
+    bun
+    pnpm
+    nodejs
+    kubectl
+    home-manager
+    gh
   ];
 
   # ── SSH ───────────────────────────────────────────────────────────────────
-  programs.ssh = {
-    enable = true;
-    matchBlocks = {
-      "github.com" = {
-        hostname     = "github.com";
-        user         = "git";
-        identityFile = "~/.ssh/id_ed25519";
-      };
-    };
-  };
+  # programs.ssh = {
+  #   enable = true;
+  #   matchBlocks = {
+  #     "github.com" = {
+  #       hostname     = "github.com";
+  #       user         = "git";
+  #       identityFile = "~/.ssh/id_ed25519";
+  #     };
+  #   };
+  # };
+
+  # ── Default shell → zsh ───────────────────────────────────────────────────
+  # home.activation.setDefaultShell = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  #   if [ "$(getent passwd ${myUser} | cut -d: -f7)" != "${pkgs.zsh}/bin/zsh" ]; then
+  #     run chsh -s ${pkgs.zsh}/bin/zsh ${myUser}
+  #   fi
+  # '';
+  home.activation.postInstall = lib.hm.dag.entryAfter [ "installPackages" ] ''
+    echo "packages installed, running post-install script..." && \
+    source ~/.bashrc && \
+    echo "post-install script completed."
+  '';
+
+  home.activation.installPI = lib.hm.dag.entryAfter [ "installPackages" ] ''
+    export PNPM_HOME="$HOME/.local/share/pnpm"
+    mkdir -p "$PNPM_HOME"
+    export PATH="${pkgs.pnpm}/bin:${pkgs.nodejs}/bin:$PNPM_HOME:$PATH"
+    echo "Installing pi-coding-agent via pnpm..."
+    pnpm install -g @mariozechner/pi-coding-agent
+    echo "pi-coding-agent installed."
+  '';
 
   # ── direnv hook (so `direnv allow` works in every new shell) ──────────────
   programs.direnv = {

@@ -99,5 +99,11 @@ Then in `home.nix`, branch on the `profile` argument:
 Apply it:
 
 ```bash
-home-manager switch --flake .#staging
+home-manager switch --flake .#coder
+```
+
+or
+
+```bash
+nix run nixpkgs#home-manager -- switch --flake .#coder
 ```
