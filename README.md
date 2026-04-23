@@ -54,56 +54,19 @@ After that, just `cd` into the directory — shell is ready automatically.
 
 ---
 
-### 3. Apply a home-manager profile
+### 3. Bootstrap (first-time setup)
 
-Profiles live in `flake.nix` under `homeConfigurations`:
-
-| Profile | Command |
-|---------|---------|
-| `work` | `nix run nixpkgs#home-manager -- switch --flake .#work` |
-| `personal` | `nix run nixpkgs#home-manager -- switch --flake .#personal` |
-
-Once `home-manager` is on your `PATH` (after first switch), you can use the shorter form:
+Run the bootstrap script to symlink configs and apply home-manager in one step:
 
 ```bash
-home-manager switch --flake .#work
-home-manager switch --flake .#personal
+./bootstrap.sh
 ```
 
-> **First time on a new machine** always use `nix run nixpkgs#home-manager` — it bootstraps home-manager before it exists on your PATH.
+This will:
+1. Symlink `.tmux.config` → `~/.tmux.conf`
+2. Apply the home-manager configuration via `nix run nixpkgs#home-manager -- switch --flake .#coder`
 
-### 4. Add a new profile
-
-In `flake.nix`, add an entry inside `homeConfigurations`:
-
-```nix
-homeConfigurations = {
-  work     = mkHome "work";
-  personal = mkHome "personal";
-  staging  = mkHome "staging";  # ← new profile
-};
-```
-
-Then in `home.nix`, branch on the `profile` argument:
-
-```nix
-{ pkgs, profile, myUser, ... }:
-{
-  programs.git.userEmail =
-    if profile == "work"     then "you@company.com"
-    else if profile == "staging" then "you@staging.com"
-    else "you@personal.com";
-}
-```
-
-Apply it:
-
-```bash
-home-manager switch --flake .#coder
-```
-
-or
-
-```bash
-nix run nixpkgs#home-manager -- switch --flake .#coder
-```
+> **Subsequent runs** — once `home-manager` is on your `PATH`, you can apply changes directly:
+> ```bash
+> home-manager switch --flake .#coder
+> ```
