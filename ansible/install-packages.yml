@@ -1,0 +1,64 @@
+---
+- name: Install packages similar to home.packages
+  hosts: localhost
+  connection: local
+  become: true
+  gather_facts: true
+
+  vars:
+    # Mirrors the cross-platform packages from home.nix where possible.
+    common_packages:
+      - ripgrep
+      - jq
+      - curl
+      - htop
+      - podman
+      - nodejs
+      - gh
+      - direnv
+
+    kubectl_package_by_family:
+      Debian: kubernetes-client
+      RedHat: kubernetes-client
+      Archlinux: kubectl
+
+  tasks:
+    - name: Install common system packages
+      ansible.builtin.package:
+        name: "{{ common_packages }}"
+        state: present
+
+    - name: Install kubectl package
+      ansible.builtin.package:
+        name: "{{ kubectl_package_by_family.get(ansible_os_family, 'kubectl') }}"
+        state: present
+
+    - name: Check if bun is already installed
+      ansible.builtin.command: bun --version
+      register: bun_check
+      changed_when: false
+      failed_when: false
+
+    - name: Install bun (official installer)
+      ansible.builtin.shell: |
+        set -euo pipefail
+        curl -fsSL https://bun.sh/install | bash
+      args:
+        executable: /bin/bash
+      when: bun_check.rc != 0
+
+    - name: Check if pnpm is already installed
+      ansible.builtin.command: pnpm --version
+      register: pnpm_check
+      changed_when: false
+      failed_when: false
+
+    - name: Install pnpm globally via npm
+      ansible.builtin.command: npm install -g pnpm
+      when: pnpm_check.rc != 0
+
+    - name: Print note about nix-only package
+      ansible.builtin.debug:
+        msg: >-
+          home-manager is a Nix package and is not installed here via system package manager.
+          Keep managing home-manager through Nix/flake.
