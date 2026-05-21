@@ -8,4 +8,11 @@ tmux source-file ~/.tmux.conf
 echo "==> Applying home-manager configuration..."
 nix run nixpkgs#home-manager -- switch --flake .#coder
 
+echo "==> Installing home-manager startup service..."
+mkdir -p "$HOME/.config/systemd/user"
+ln -sf "$(pwd)/systemd/home-manager-switch.service" \
+       "$HOME/.config/systemd/user/home-manager-switch.service"
+systemctl --user daemon-reload
+systemctl --user enable home-manager-switch.service
+
 echo "==> Done."
