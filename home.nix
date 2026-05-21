@@ -22,7 +22,7 @@ in
     enable    = true;
     settings = {
       user.name  = "tostyle";
-      user.email = "terdtai.watanatien@kingpower.com";
+      user.email = "tostyle";
       init.defaultBranch = "main";
       pull.rebase        = false;
     };
