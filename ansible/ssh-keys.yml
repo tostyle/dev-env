@@ -1,0 +1,40 @@
+---
+# ssh-keys.yml — generate SSH keys for this machine
+# Run standalone: ansible-playbook ansible/ssh-keys.yml
+
+- name: SSH key setup
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    ssh_dir: "{{ lookup('env', 'HOME') }}/.ssh"
+    coder_key: "{{ ssh_dir }}/id_coder"
+
+  tasks:
+    - name: Ensure ~/.ssh exists with correct permissions
+      ansible.builtin.file:
+        path: "{{ ssh_dir }}"
+        state: directory
+        mode: "0700"
+
+    - name: Check if id_coder key already exists
+      ansible.builtin.stat:
+        path: "{{ coder_key }}"
+      register: key_stat
+
+    - name: Generate id_coder ed25519 SSH key
+      ansible.builtin.command:
+        cmd: ssh-keygen -t ed25519 -f {{ coder_key }} -N "" -C id_coder
+      when: not key_stat.stat.exists
+      register: keygen
+
+    - name: Read public key
+      ansible.builtin.command:
+        cmd: cat {{ coder_key }}.pub
+      register: pubkey
+      changed_when: false
+
+    - name: "Public key (add to GitHub / GitLab / authorized_keys as needed)"
+      ansible.builtin.debug:
+        msg: "{{ pubkey.stdout }}"

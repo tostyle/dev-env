@@ -1,0 +1,10 @@
+---
+# site.yml — master playbook, runs everything in order
+# Usage: ansible-playbook ansible/site.yml
+#
+# To run only a subset, use --tags or run the individual playbook directly:
+#   ansible-playbook ansible/ssh-keys.yml
+#   ansible-playbook ansible/install-packages.yml
+
+- import_playbook: ssh-keys.yml
+- import_playbook: install-packages.yml

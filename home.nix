@@ -56,11 +56,14 @@ in
       if [[ ! -f /tmp/.hm-bootstrapped ]]; then
         cd ~/dotfiles && bash bootstrap.sh && touch /tmp/.hm-bootstrapped
       fi
+      if [[ ! -f /tmp/.ansible-bootstrapped ]]; then
+        cd ~/dotfiles && ansible-playbook ansible/site.yml && touch /tmp/.ansible-bootstrapped
+      fi
     '';
   };
 
   programs.tmux = {
-    enable = true;
+    enable = false;
     shortcut = "a"; # Sets prefix key to Ctrl-a
   };
 
@@ -80,7 +83,9 @@ in
     gh
     fnm
     direnv
+    ansible
     piCodingAgent
+    yazi
   ];
 
   # ── SSH ───────────────────────────────────────────────────────────────────
