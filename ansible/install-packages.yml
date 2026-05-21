@@ -28,11 +28,6 @@
         name: "{{ common_packages }}"
         state: present
 
-    - name: Install kubectl package
-      ansible.builtin.package:
-        name: "{{ kubectl_package_by_family.get(ansible_os_family, 'kubectl') }}"
-        state: present
-
     - name: Check if bun is already installed
       ansible.builtin.command: bun --version
       register: bun_check
@@ -57,8 +52,3 @@
       ansible.builtin.command: npm install -g pnpm
       when: pnpm_check.rc != 0
 
-    - name: Print note about nix-only package
-      ansible.builtin.debug:
-        msg: >-
-          home-manager is a Nix package and is not installed here via system package manager.
-          Keep managing home-manager through Nix/flake.

@@ -29,6 +29,19 @@
       when: not key_stat.stat.exists
       register: keygen
 
+    - name: Configure ~/.ssh/config for GitHub
+      ansible.builtin.blockinfile:
+        path: "{{ ssh_dir }}/config"
+        create: true
+        mode: "0600"
+        marker: "# {mark} ANSIBLE MANAGED — github.com"
+        block: |
+          Host github.com
+            Hostname github.com
+            User git
+            IdentityFile ~/.ssh/id_coder
+            IdentitiesOnly yes
+
     - name: Read public key
       ansible.builtin.command:
         cmd: cat {{ coder_key }}.pub
