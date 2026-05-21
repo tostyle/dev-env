@@ -4,7 +4,7 @@
 # Activate with:
 #   home-manager switch --flake .#<username>
 
-{ pkgs, myUser, lib, ... }:
+{ pkgs, myUser, lib, gitName, gitEmail, ... }:
 
 let
   piCodingAgent = pkgs.callPackage ./pkgs/pi-coding-agent.nix { inherit lib; };
@@ -21,8 +21,8 @@ in
   programs.git = {
     enable    = true;
     settings = {
-      user.name  = "tostyle";
-      user.email = "tostyle";
+      user.name  = gitName;
+      user.email = gitEmail;
       init.defaultBranch = "main";
       pull.rebase        = false;
     };

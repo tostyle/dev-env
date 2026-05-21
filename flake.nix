@@ -22,11 +22,10 @@
       myUser    = "coder";  # result of `whoami`
       # ────────────────────────────────────────────────────────────────────────
 
-      mkHome = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.${mySystem};
-        extraSpecialArgs = { inherit myUser; };
-        modules = [ ./home.nix ];
-      };
+      # ── Private values (gitignored) — copy private.nix.example → private.nix
+      env = if builtins.pathExists ./env.nix
+                then import ./env.nix
+                else {};
     in
     # ── Per-architecture outputs (devShell) ──────────────────────────────────
     flake-utils.lib.eachDefaultSystem (system:
@@ -70,7 +69,11 @@
       homeConfigurations = {
         "coder" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.${mySystem};
-          extraSpecialArgs = { inherit myUser; };
+          extraSpecialArgs = {
+            inherit myUser;
+            gitName  = env.gitName  or myUser;
+            gitEmail = env.gitEmail or myUser;
+          };
           modules = [ ./home.nix ];
         };
       };
