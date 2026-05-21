@@ -54,6 +54,9 @@ in
       export PATH="$HOME/.nix-profile/bin:$PATH"
       export PNPM_HOME="$HOME/.local/share/pnpm"
       export PATH="$PNPM_HOME:$PATH"
+      if [[ ! -f ~/.config/.hm-bootstrapped ]]; then
+        cd ~/dotfiles && bash bootstrap.sh && touch ~/.config/.hm-bootstrapped
+      fi
     '';
   };
 
