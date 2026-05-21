@@ -6,6 +6,9 @@
 
 { pkgs, myUser, lib, ... }:
 
+let
+  piCodingAgent = pkgs.callPackage ./pkgs/pi-coding-agent.nix { inherit lib; };
+in
 {
   # ── Required home-manager settings ────────────────────────────────────────
   home.username      = myUser;
@@ -15,16 +18,16 @@
   home.stateVersion  = "24.11"; # do not change after first switch
 
   # ── Git ───────────────────────────────────────────────────────────────────
-  # programs.git = {
-  #   enable    = true;
-  #   userName  = "Your Name";
-  #   userEmail = "you@example.com";
+  programs.git = {
+    enable    = true;
+    userName  = "tostyle";
+    userEmail = "terdtai.watanatien@kingpower.com";
 
-  #   extraConfig = {
-  #     init.defaultBranch = "main";
-  #     pull.rebase        = true;
-  #   };
-  # };
+    extraConfig = {
+      init.defaultBranch = "main";
+      pull.rebase        = false;
+    };
+  };
 
   # ── Shell (zsh) ───────────────────────────────────────────────────────────
   programs.zsh = {
@@ -54,6 +57,11 @@
     '';
   };
 
+  programs.tmux = {
+    enable = true;
+    shortcut = "a"; # Sets prefix key to Ctrl-a
+  };
+
   # ── Packages ──────────────────────────────────────────────────────────────
   home.packages = with pkgs; [
     ripgrep
@@ -68,10 +76,9 @@
     kubectl
     home-manager
     gh
-    yazi
-    distrobox
     fnm
     direnv
+    piCodingAgent
   ];
 
   # ── SSH ───────────────────────────────────────────────────────────────────
@@ -92,21 +99,6 @@
   #     run chsh -s ${pkgs.zsh}/bin/zsh ${myUser}
   #   fi
   # '';
-  home.activation.postInstall = lib.hm.dag.entryAfter [ "installPackages" ] ''
-    echo "packages installed, running post-install script..." && \
-    source ~/.bashrc && \
-    echo "post-install script completed."
-  '';
-
-  home.activation.installPI = lib.hm.dag.entryAfter [ "installPackages" ] ''
-    export PNPM_HOME="$HOME/.local/share/pnpm"
-    mkdir -p "$PNPM_HOME"
-    export PATH="${pkgs.pnpm}/bin:${pkgs.nodejs}/bin:$PNPM_HOME:$PATH"
-    echo "Installing pi-coding-agent via pnpm..."
-    pnpm install -g @mariozechner/pi-coding-agent
-    echo "pi-coding-agent installed."
-  '';
-
   # ── direnv hook (so `direnv allow` works in every new shell) ──────────────
   programs.direnv = {
     enable            = true;
