@@ -20,10 +20,9 @@ in
   # ── Git ───────────────────────────────────────────────────────────────────
   programs.git = {
     enable    = true;
-    userName  = "tostyle";
-    userEmail = "terdtai.watanatien@kingpower.com";
-
-    extraConfig = {
+    settings = {
+      user.name  = "tostyle";
+      user.email = "terdtai.watanatien@kingpower.com";
       init.defaultBranch = "main";
       pull.rebase        = false;
     };
@@ -54,8 +53,8 @@ in
       export PATH="$HOME/.nix-profile/bin:$PATH"
       export PNPM_HOME="$HOME/.local/share/pnpm"
       export PATH="$PNPM_HOME:$PATH"
-      if [[ ! -f ~/.config/.hm-bootstrapped ]]; then
-        cd ~/dotfiles && bash bootstrap.sh && touch ~/.config/.hm-bootstrapped
+      if [[ ! -f /tmp/.hm-bootstrapped ]]; then
+        cd ~/dotfiles && bash bootstrap.sh && touch /tmp/.hm-bootstrapped
       fi
     '';
   };
