@@ -17,38 +17,34 @@
       - gh
       - direnv
 
-    kubectl_package_by_family:
-      Debian: kubernetes-client
-      RedHat: kubernetes-client
-      Archlinux: kubectl
 
   tasks:
-    - name: Install common system packages
-      ansible.builtin.package:
-        name: "{{ common_packages }}"
-        state: present
+    # - name: Install common system packages
+    #   ansible.builtin.package:
+    #     name: "{{ common_packages }}"
+    #     state: present
 
-    - name: Check if bun is already installed
-      ansible.builtin.command: bun --version
-      register: bun_check
+    - name: Check if pi-coding-agent is already installed globally
+      ansible.builtin.command: npm list -g --depth=0 @earendil-works/pi-coding-agent
+      register: pi_coding_agent_check
       changed_when: false
       failed_when: false
+      become: false
 
-    - name: Install bun (official installer)
-      ansible.builtin.shell: |
-        set -euo pipefail
-        curl -fsSL https://bun.sh/install | bash
-      args:
-        executable: /bin/bash
-      when: bun_check.rc != 0
+    - name: Install pi-coding-agent globally via npm
+      ansible.builtin.command: npm install -g --ignore-scripts @earendil-works/pi-coding-agent
+      when: pi_coding_agent_check.rc != 0
+      become: false
 
-    - name: Check if pnpm is already installed
-      ansible.builtin.command: pnpm --version
-      register: pnpm_check
+    - name: Check if typescript is already installed globally
+      ansible.builtin.command: npm list -g --depth=0 typescript
+      register: typescript_check
       changed_when: false
       failed_when: false
+      become: false
 
-    - name: Install pnpm globally via npm
-      ansible.builtin.command: npm install -g pnpm
-      when: pnpm_check.rc != 0
+    - name: Install typescript globally via npm
+      ansible.builtin.command: npm install -g typescript
+      when: typescript_check.rc != 0
+      become: false
 

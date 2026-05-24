@@ -70,3 +70,10 @@ This will:
 > ```bash
 > home-manager switch --flake .#coder
 > ```
+
+
+### Install pi extension
+1 npm problem need to set installed directory to ~/.local instead nix store bcz it read only dir
+```
+npm config set prefix ~/.local
+```
