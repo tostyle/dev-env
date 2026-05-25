@@ -11,11 +11,11 @@ set -euo pipefail
 echo "==> Applying home-manager configuration..."
 nix run nixpkgs#home-manager -- switch --flake .#coder
 
-
-
 echo "==> Reloading bash configuration..."
 export PATH="$HOME/.nix-profile/bin:$PATH"
 
 echo "==> Running Ansible playbooks..."
 ansible-playbook ansible/site.yml
 echo "==> Done."
+
+source ~/.bashrc
