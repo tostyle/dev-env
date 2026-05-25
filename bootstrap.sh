@@ -11,13 +11,11 @@ set -euo pipefail
 echo "==> Applying home-manager configuration..."
 nix run nixpkgs#home-manager -- switch --flake .#coder
 
-echo "==> Running Ansible playbooks..."
-ansible-playbook ansible/site.yml
+
 
 echo "==> Reloading bash configuration..."
-if [[ -f "$HOME/.bashrc" ]]; then
-  # shellcheck disable=SC1090
-  source "$HOME/.bashrc"
-fi
+export PATH="$HOME/.nix-profile/bin:$PATH"
 
+echo "==> Running Ansible playbooks..."
+ansible-playbook ansible/site.yml
 echo "==> Done."

@@ -54,12 +54,12 @@ in
       export PNPM_HOME="$HOME/.local/share/pnpm"
       export PATH="$PNPM_HOME:$PATH"
       export NPM_CONFIG_PREFIX="$HOME/.local"
-      if [[ ! -f /tmp/.hm-bootstrapped ]]; then
-        cd ~/dotfiles && bash bootstrap.sh && touch /tmp/.hm-bootstrapped
-      fi
-      if [[ -f "$HOME/.bashrc" ]]; then
-        source "$HOME/.bashrc"
-      fi
+      # if [[ ! -f /tmp/.hm-bootstrapped ]]; then
+      #   cd ~/dotfiles && bash bootstrap.sh && touch /tmp/.hm-bootstrapped
+      # fi
+      # if [[ -f "$HOME/.bashrc" ]]; then
+      #   source "$HOME/.bashrc"
+      # fi
       # if [[ ! -f /tmp/.ansible-bootstrapped ]]; then
       #   cd ~/dotfiles && ansible-playbook ansible/site.yml && touch /tmp/.ansible-bootstrapped
       # fi
@@ -89,6 +89,7 @@ in
     ansible
     yazi
     lazygit
+    lazydocker
     # piCodingAgent
     # distrobox
   ];
