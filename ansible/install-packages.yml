@@ -30,11 +30,15 @@
       changed_when: false
       failed_when: false
       become: false
+      environment:
+        NPM_CONFIG_PREFIX: "{{ lookup('env', 'HOME') }}/.local"
 
     - name: Install pi-coding-agent globally via npm
       ansible.builtin.command: npm install -g --ignore-scripts @earendil-works/pi-coding-agent
       when: pi_coding_agent_check.rc != 0
       become: false
+      environment:
+        NPM_CONFIG_PREFIX: "{{ lookup('env', 'HOME') }}/.local"
 
     - name: Check if typescript is already installed globally
       ansible.builtin.command: npm list -g --depth=0 typescript
@@ -42,9 +46,13 @@
       changed_when: false
       failed_when: false
       become: false
+      environment:
+        NPM_CONFIG_PREFIX: "{{ lookup('env', 'HOME') }}/.local"
 
     - name: Install typescript globally via npm
       ansible.builtin.command: npm install -g typescript
       when: typescript_check.rc != 0
       become: false
+      environment:
+        NPM_CONFIG_PREFIX: "{{ lookup('env', 'HOME') }}/.local"
 
