@@ -77,7 +77,7 @@ in
     jq
     curl
     htop
-    podman
+    # podman
     bun
     pnpm
     nodejs

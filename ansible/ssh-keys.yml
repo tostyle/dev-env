@@ -42,6 +42,14 @@
             User git
             IdentityFile ~/.ssh-local/id_coder
             IdentitiesOnly yes
+    - name: Change permission of private key files to 600
+      ansible.builtin.file:
+        path: "{{ coder_key }}"
+        mode: "0600"
+    - name: Change permission of public key file to 644
+      ansible.builtin.file:
+        path: "{{ coder_key }}.pub"
+        mode: "0644"
 
     - name: Read public key
       ansible.builtin.command:

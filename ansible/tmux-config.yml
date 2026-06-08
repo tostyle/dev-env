@@ -1,0 +1,23 @@
+---
+- name: Copy tmux config and reload
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Copy tmux config to ~/.tmux.conf
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../.tmux.config"
+        dest: "{{ lookup('env', 'HOME') }}/.tmux.conf"
+        mode: "0644"
+      become: false
+
+    - name: Reload tmux configuration if tmux is running
+      ansible.builtin.shell: |
+        if tmux info &>/dev/null; then
+          tmux source-file "{{ lookup('env', 'HOME') }}/.tmux.conf"
+        fi
+      changed_when: false
+      become: false
+      args:
+        executable: /bin/bash
