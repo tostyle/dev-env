@@ -17,5 +17,3 @@ export PATH="$HOME/.nix-profile/bin:$PATH"
 echo "==> Running Ansible playbooks..."
 ansible-playbook ansible/site.yml
 echo "==> Done."
-
-source ~/.bashrc
