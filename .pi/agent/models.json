@@ -1,0 +1,32 @@
+{
+  "providers": {
+    "ollama-cloud": {
+      "api": "openai-completions",
+      "apiKey": "$OLLAMA_API_KEY",
+      "baseUrl": "https://ollama.com/v1",
+      "models": [
+        {
+          "id": "glm-5.1:cloud"
+        },
+        {
+          "id": "minimax-m2.7:cloud"
+        },
+        {
+          "id": "kimi-k2.6:cloud"
+        },
+        {
+          "id": "kimi-k2.7-code:cloud"
+        },
+        {
+          "id": "deepseek-v4-pro:cloud"
+        },
+        {
+          "id": "deepseek-v4-flash:cloud"
+        },
+        {
+          "id": "minimax-m3:cloud"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,20 @@
+---
+- name: Copy pi config to ~/.pi/agent
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Ensure ~/.pi/agent directory exists
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/.pi/agent"
+        state: directory
+        mode: "0755"
+      become: false
+
+    - name: Copy models.json to ~/.pi/agent
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../.pi/agent/models.json"
+        dest: "{{ lookup('env', 'HOME') }}/.pi/agent/models.json"
+        mode: "0644"
+      become: false
