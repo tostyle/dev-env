@@ -91,8 +91,6 @@ in
     lazygit
     lazydocker
     neovim
-    # piCodingAgent
-    # distrobox
   ];
 
   # ── SSH ───────────────────────────────────────────────────────────────────
