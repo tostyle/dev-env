@@ -73,6 +73,7 @@ in
 
   # ── Packages ──────────────────────────────────────────────────────────────
   home.packages = with pkgs; [
+    bat
     ripgrep
     jq
     curl
