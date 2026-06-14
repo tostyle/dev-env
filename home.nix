@@ -90,6 +90,7 @@ in
     yazi
     lazygit
     lazydocker
+    neovim
     # piCodingAgent
     # distrobox
   ];

@@ -1,0 +1,21 @@
+---
+- name: Copy neovim config to ~/.config/nvim
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Ensure ~/.config/nvim directory exists
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/.config/nvim"
+        state: directory
+        mode: "0755"
+      become: false
+
+    - name: Copy nvim config files
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../nvim-config/"
+        dest: "{{ lookup('env', 'HOME') }}/.config/nvim/"
+        mode: "0644"
+        directory_mode: "0755"
+      become: false
