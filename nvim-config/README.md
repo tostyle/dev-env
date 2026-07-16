@@ -85,7 +85,7 @@
 |---|---|
 | `<leader>w` | Save file |
 | `<leader>q` | Quit |
-| `<leader>e` | Open yazi file manager |
+| `<leader>z` | Open yazi file manager |
 | `<leader>` (wait) | Show which-key cheatsheet |
 
 ## Prerequisites
