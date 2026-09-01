@@ -7,7 +7,7 @@
   tasks:
     - name: Copy tmux config to ~/.tmux.conf
       ansible.builtin.copy:
-        src: "{{ playbook_dir }}/../.tmux.config"
+        src: "{{ playbook_dir }}/../.tmux.conf"
         dest: "{{ lookup('env', 'HOME') }}/.tmux.conf"
         mode: "0644"
       become: false
