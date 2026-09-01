@@ -4,10 +4,10 @@
 # Activate with:
 #   home-manager switch --flake .#<username>
 
-{ pkgs, myUser, lib, gitName, gitEmail, ... }:
+{ pkgs, myUser, lib, gitName, gitEmail, llm-agents, ... }:
 
 let
-  piCodingAgent = pkgs.callPackage ./pkgs/pi-coding-agent.nix { inherit lib; };
+  agentPkgs = llm-agents.packages.${pkgs.system};
 in
 {
   # ── Required home-manager settings ────────────────────────────────────────
@@ -92,6 +92,12 @@ in
     lazygit
     lazydocker
     neovim
+  ]
+  # AI coding agents from github:numtide/llm-agents.nix
+  # (pi replaces the deprecated @mariozechner/pi-coding-agent custom derivation)
+  ++ [
+    agentPkgs.pi
+    agentPkgs.herdr
   ];
 
   # ── SSH ───────────────────────────────────────────────────────────────────

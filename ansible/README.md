@@ -74,4 +74,4 @@ On plain Linux machines, add it manually to `~/.bashrc`.
 | `pnpm` | `npm install -g pnpm` |
 | `fnm` | official curl installer |
 | `home-manager` | Nix only — not installed via Ansible |
-| `piCodingAgent` | Nix only — not installed via Ansible |
+| `pi`, `herdr` | Nix only (llm-agents.nix) — not installed via Ansible. `pi-config.yml` still copies `models.json` to `~/.pi/agent` |

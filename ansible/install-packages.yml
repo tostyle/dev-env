@@ -24,21 +24,8 @@
     #     name: "{{ common_packages }}"
     #     state: present
 
-    - name: Check if pi-coding-agent is already installed globally
-      ansible.builtin.command: npm list -g --depth=0 @earendil-works/pi-coding-agent
-      register: pi_coding_agent_check
-      changed_when: false
-      failed_when: false
-      become: false
-      environment:
-        NPM_CONFIG_PREFIX: "{{ lookup('env', 'HOME') }}/.local"
-
-    - name: Install pi-coding-agent globally via npm
-      ansible.builtin.command: npm install -g --ignore-scripts @earendil-works/pi-coding-agent
-      when: pi_coding_agent_check.rc != 0
-      become: false
-      environment:
-        NPM_CONFIG_PREFIX: "{{ lookup('env', 'HOME') }}/.local"
+    # NOTE: pi and herdr are now installed via Nix
+    # (github:numtide/llm-agents.nix in home.nix) — not via npm/curl/brew.
 
     - name: Check if typescript is already installed globally
       ansible.builtin.command: npm list -g --depth=0 typescript

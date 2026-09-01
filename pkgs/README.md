@@ -135,11 +135,21 @@ git add pkgs/my-tool-package-lock.json pkgs/my-tool.nix
 
 ---
 
-## Example: `pi-coding-agent`
+## Real-world note: `pi-coding-agent`
 
-See [pi-coding-agent.nix](./pi-coding-agent.nix) — a real-world example of a
-deprecated npm CLI tool that:
-- fetches its tarball from the npm registry
-- vendors a generated `package-lock.json` via `postPatch`
-- skips the build step because `dist/` is pre-compiled
-- uses `--legacy-peer-deps` to handle an optional peer dependency
+The former custom derivation `pi-coding-agent.nix` (deprecated upstream
+`@mariozechner/pi-coding-agent`) was removed in favor of the `pi` package
+from [github:numtide/llm-agents.nix](https://github.com/numtide/llm-agents.nix),
+which packages the successor `@earendil-works/pi-coding-agent` — along with
+`herdr` and many other AI coding agents — with daily updates and prebuilt
+binaries on `https://cache.numtide.com`.
+
+Both are wired into `home.nix` via the `llm-agents` flake input:
+
+```nix
+agentPkgs = llm-agents.packages.${pkgs.system};
+home.packages = [ agentPkgs.pi agentPkgs.herdr ];
+```
+
+Only use this directory for packages that are unavailable in both nixpkgs
+and llm-agents.nix.

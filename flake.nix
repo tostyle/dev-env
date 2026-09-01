@@ -1,6 +1,13 @@
 {
   description = "Development environment — podman, git, bun, pnpm";
 
+  # Only applied when running this flake directly (nix run/develop/build).
+  # Consumers must add these to their own nix conf to get binary cache hits.
+  nixConfig = {
+    extra-substituters = [ "https://cache.numtide.com" ];
+    extra-trusted-public-keys = [ "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=" ];
+  };
+
   inputs = {
     # nixos-unstable gives us the latest package versions
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -13,9 +20,16 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # nix packages for AI coding agents (pi, herdr, opencode, ...)
+    # daily-updated flakes, provides prebuilt binaries via cache.numtide.com
+    llm-agents = {
+      url = "github:numtide/llm-agents.nix";
+      # NOTE: no `follows` on nixpkgs — llm-agents.nix pins its own
+      # nixpkgs-unstable; following ours can break their hashes/cache.
+    };
   };
 
-  outputs = { self, nixpkgs, flake-utils, home-manager }:
+  outputs = { self, nixpkgs, flake-utils, home-manager, llm-agents }:
     let
       # ── Change these two values to match your machine ──────────────────────
       mySystem  = "aarch64-linux"; # or "x86_64-linux", "aarch64-darwin", "x86_64-darwin"
@@ -71,6 +85,7 @@
           pkgs = nixpkgs.legacyPackages.${mySystem};
           extraSpecialArgs = {
             inherit myUser;
+            inherit llm-agents;
             gitName  = env.gitName  or myUser;
             gitEmail = env.gitEmail or myUser;
           };
