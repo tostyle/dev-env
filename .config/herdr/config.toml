@@ -1,0 +1,20 @@
+onboarding = false
+
+[ui.toast]
+delivery = "system"
+
+[ui]
+show_agent_labels_on_pane_borders = true
+
+[keys]
+prefix = "ctrl+a"
+focus_pane_left = ["prefix+h", "prefix+ctrl+h"]
+focus_pane_down = ["prefix+j", "prefix+ctrl+j"]
+focus_pane_up = ["prefix+k", "prefix+ctrl+k"]
+focus_pane_right = ["prefix+l", "prefix+ctrl+l"]
+previous_tab = ["prefix+p", "ctrl+alt+["]
+next_tab = ["prefix+n", "ctrl+alt+]"]
+new_tab = ["prefix+c", "ctrl+alt+c"]
+split_vertical = ["prefix+v"]
+split_horizontal = ["prefix+minus"]
+zoom = ["prefix+z", "ctrl+alt+z"]

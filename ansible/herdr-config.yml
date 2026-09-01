@@ -1,0 +1,20 @@
+---
+- name: Copy herdr config to ~/.config/herdr
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Ensure ~/.config/herdr directory exists
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/.config/herdr"
+        state: directory
+        mode: "0755"
+      become: false
+
+    - name: Copy config.toml to ~/.config/herdr
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../.config/herdr/config.toml"
+        dest: "{{ lookup('env', 'HOME') }}/.config/herdr/config.toml"
+        mode: "0644"
+      become: false
