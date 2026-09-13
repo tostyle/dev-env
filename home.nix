@@ -34,6 +34,12 @@ in
     enableCompletion  = true;
     autosuggestion.enable = true;
 
+    oh-my-zsh = {
+      enable  = true;
+      plugins = [ "git" "kubectl" "docker" ];
+      theme   = "robbyrussell";
+    };
+
     shellAliases = {
       ll  = "ls -la";
       g   = "git";
@@ -48,7 +54,7 @@ in
   };
 
   programs.bash = {
-    enable = true;
+    enable = false;
     initExtra = ''
       export PATH="$HOME/.nix-profile/bin:$PATH"
       export PNPM_HOME="$HOME/.local/share/pnpm"
@@ -74,6 +80,9 @@ in
   # ── Packages ──────────────────────────────────────────────────────────────
   home.packages = with pkgs; [
     bat
+    zoxide
+    fzf
+    fd
     ripgrep
     jq
     curl
@@ -83,6 +92,9 @@ in
     pnpm
     nodejs
     kubectl
+    kubernetes-helm
+    minikube
+    k9s
     home-manager
     gh
     fnm
@@ -92,6 +104,7 @@ in
     lazygit
     lazydocker
     neovim
+    xclip
   ]
   # AI coding agents from github:numtide/llm-agents.nix
   # (pi replaces the deprecated @mariozechner/pi-coding-agent custom derivation)
@@ -112,12 +125,6 @@ in
   #   };
   # };
 
-  # ── Default shell → zsh ───────────────────────────────────────────────────
-  # home.activation.setDefaultShell = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-  #   if [ "$(getent passwd ${myUser} | cut -d: -f7)" != "${pkgs.zsh}/bin/zsh" ]; then
-  #     run chsh -s ${pkgs.zsh}/bin/zsh ${myUser}
-  #   fi
-  # '';
   # ── direnv hook (so `direnv allow` works in every new shell) ──────────────
   programs.direnv = {
     enable            = true;

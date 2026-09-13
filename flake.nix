@@ -55,6 +55,8 @@
             bun     # fast JS runtime & package manager
             pnpm    # efficient Node package manager
             kubectl # Kubernetes CLI — apply RBAC manifests and manage clusters
+            helm    # Kubernetes package manager
+            minikube # local Kubernetes cluster for development
             direnv  # auto-load .envrc when entering a directory
             nix-direnv # direnv extension: cache `nix develop` shells so they
                        # reload only when flake.lock changes, not every shell open
