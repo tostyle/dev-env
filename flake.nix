@@ -27,9 +27,15 @@
       # NOTE: no `follows` on nixpkgs — llm-agents.nix pins its own
       # nixpkgs-unstable; following ours can break their hashes/cache.
     };
+    # Hermes Agent Nix flake (tier-2; provides Home Manager / NixOS modules)
+    hermes-agent = {
+      url = "github:NousResearch/hermes-agent";
+      # NOTE: hermes-agent pins its own nixpkgs; do not follow ours to keep
+      # its uv2nix/python builds from breaking on our nixos-unstable pin.
+    };
   };
 
-  outputs = { self, nixpkgs, flake-utils, home-manager, llm-agents }:
+  outputs = { self, nixpkgs, flake-utils, home-manager, llm-agents, hermes-agent }:
     let
       # ── Change these two values to match your machine ──────────────────────
       mySystem  = "aarch64-linux"; # or "x86_64-linux", "aarch64-darwin", "x86_64-darwin"
@@ -87,7 +93,7 @@
           pkgs = nixpkgs.legacyPackages.${mySystem};
           extraSpecialArgs = {
             inherit myUser;
-            inherit llm-agents;
+            inherit llm-agents hermes-agent;
             gitName  = env.gitName  or myUser;
             gitEmail = env.gitEmail or myUser;
           };

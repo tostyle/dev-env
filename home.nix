@@ -4,12 +4,13 @@
 # Activate with:
 #   home-manager switch --flake .#<username>
 
-{ pkgs, myUser, lib, gitName, gitEmail, llm-agents, ... }:
+{ pkgs, myUser, lib, gitName, gitEmail, llm-agents, hermes-agent, ... }:
 
 let
   agentPkgs = llm-agents.packages.${pkgs.system};
 in
 {
+  imports = [ hermes-agent.homeManagerModules.default ];
   # ── Required home-manager settings ────────────────────────────────────────
   home.username      = myUser;
   home.homeDirectory = if pkgs.stdenv.isDarwin
@@ -30,7 +31,7 @@ in
 
   # ── Shell (zsh) ───────────────────────────────────────────────────────────
   programs.zsh = {
-    enable            = true;
+    enable            = false;
     enableCompletion  = true;
     autosuggestion.enable = true;
 
@@ -54,7 +55,7 @@ in
   };
 
   programs.bash = {
-    enable = false;
+    enable = true;
     initExtra = ''
       export PATH="$HOME/.nix-profile/bin:$PATH"
       export PNPM_HOME="$HOME/.local/share/pnpm"
@@ -111,6 +112,10 @@ in
   ++ [
     agentPkgs.pi
     agentPkgs.herdr
+  ]
+  # Hermes Agent CLI (declarative Home Manager service is also configured below)
+  ++ [
+    hermes-agent.packages.${pkgs.system}.default
   ];
 
   # ── SSH ───────────────────────────────────────────────────────────────────
@@ -129,5 +134,26 @@ in
   programs.direnv = {
     enable            = true;
     nix-direnv.enable = true;  # caches nix develop shells
+  };
+
+  # ── Hermes Agent (Home Manager module) ──────────────────────────────────
+  # Docs: https://github.com/NousResearch/hermes-agent/blob/main/website/docs/getting-started/nix-setup.md
+  # This puts `hermes` on PATH and exports HERMES_HOME for the session.
+  programs.hermes-agent.enable = true;
+
+  # Hermes gateway user service. Set gateway.enable = true when you want the
+  # long-running gateway (Telegram/Discord/Slack + cron). It needs at least one
+  # LLM API key in an environment file (sops/agenix or a plain 0600 file).
+  services.hermes-agent = {
+    enable = true;
+    gateway.enable = false; # flip to true once you have secrets configured
+
+    # Example configuration — uncomment and adapt after adding secrets:
+    # settings.model.default = "anthropic/claude-sonnet-4";
+    # settings.toolsets = [ "all" ];
+
+    # Never put API keys in Nix! Use sops-nix, agenix, or a plain file with
+    # mode 0600, then reference it here:
+    # environmentFiles = [ config.sops.secrets."hermes-env".path ];
   };
 }
