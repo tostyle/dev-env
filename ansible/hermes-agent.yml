@@ -1,0 +1,28 @@
+---
+- name: Install Hermes Agent CLI via official installer
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    hermes_install_url: "https://hermes-agent.nousresearch.com/install.sh"
+
+  tasks:
+    - name: Check if hermes is already installed
+      ansible.builtin.shell:
+        cmd: "command -v hermes"
+        executable: /bin/bash
+      register: hermes_bin
+      changed_when: false
+      failed_when: false
+      become: false
+
+    - name: Install Hermes Agent (curl | bash)
+      ansible.builtin.shell:
+        cmd: "curl -fsSL {{ hermes_install_url }} | bash"
+        executable: /bin/bash
+      when: hermes_bin.rc != 0
+      become: false
+      changed_when: true
+      environment:
+        HOME: "{{ lookup('env', 'HOME') }}"

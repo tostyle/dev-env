@@ -4,13 +4,13 @@
 # Activate with:
 #   home-manager switch --flake .#<username>
 
-{ pkgs, myUser, lib, gitName, gitEmail, llm-agents, hermes-agent, ... }:
+{ pkgs, myUser, lib, gitName, gitEmail, llm-agents, ... }:
 
 let
   agentPkgs = llm-agents.packages.${pkgs.system};
 in
 {
-  imports = [ hermes-agent.homeManagerModules.default ];
+  # imports = [ hermes-agent.homeManagerModules.default ];
   # ── Required home-manager settings ────────────────────────────────────────
   home.username      = myUser;
   home.homeDirectory = if pkgs.stdenv.isDarwin
@@ -113,10 +113,9 @@ in
     agentPkgs.pi
     agentPkgs.herdr
   ]
-  # Hermes Agent CLI (declarative Home Manager service is also configured below)
-  ++ [
-    hermes-agent.packages.${pkgs.system}.default
-  ];
+  # Hermes Agent CLI is installed via Ansible (ansible/hermes-agent.yml) using
+  # the official installer: curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
+  ;
 
   # ── SSH ───────────────────────────────────────────────────────────────────
   # programs.ssh = {
@@ -136,24 +135,10 @@ in
     nix-direnv.enable = true;  # caches nix develop shells
   };
 
-  # ── Hermes Agent (Home Manager module) ──────────────────────────────────
-  # Docs: https://github.com/NousResearch/hermes-agent/blob/main/website/docs/getting-started/nix-setup.md
-  # This puts `hermes` on PATH and exports HERMES_HOME for the session.
-  programs.hermes-agent.enable = true;
-
-  # Hermes gateway user service. Set gateway.enable = true when you want the
-  # long-running gateway (Telegram/Discord/Slack + cron). It needs at least one
-  # LLM API key in an environment file (sops/agenix or a plain 0600 file).
-  services.hermes-agent = {
-    enable = true;
-    gateway.enable = false; # flip to true once you have secrets configured
-
-    # Example configuration — uncomment and adapt after adding secrets:
-    # settings.model.default = "anthropic/claude-sonnet-4";
-    # settings.toolsets = [ "all" ];
-
-    # Never put API keys in Nix! Use sops-nix, agenix, or a plain file with
-    # mode 0600, then reference it here:
-    # environmentFiles = [ config.sops.secrets."hermes-env".path ];
-  };
+  # ── Hermes Agent (installed via Ansible) ────────────────────────────────
+  # Previously provided declaratively by the hermes-agent Home Manager module.
+  # Now installed with the official installer through ansible/hermes-agent.yml:
+  #   curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
+  # programs.hermes-agent.enable = true;
+  # services.hermes-agent = { ... };
 }

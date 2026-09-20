@@ -12,3 +12,4 @@
 - import_playbook: nvim-config.yml
 - import_playbook: herdr-config.yml
 - import_playbook: pi-config.yml
+- import_playbook: hermes-agent.yml

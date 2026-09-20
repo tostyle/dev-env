@@ -75,3 +75,4 @@ On plain Linux machines, add it manually to `~/.bashrc`.
 | `fnm` | official curl installer |
 | `home-manager` | Nix only — not installed via Ansible |
 | `pi`, `herdr` | Nix only (llm-agents.nix) — not installed via Ansible. `pi-config.yml` copies `models.json` to `~/.pi/agent`; `herdr-config.yml` copies `config.toml` to `~/.config/herdr` |
+| `hermes` | `hermes-agent.yml` — official installer (`curl -fsSL https://hermes-agent.nousresearch.com/install.sh \| bash`), skipped when `hermes` is already on PATH |
