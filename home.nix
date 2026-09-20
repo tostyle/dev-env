@@ -81,7 +81,6 @@ in
   # ── Packages ──────────────────────────────────────────────────────────────
   home.packages = with pkgs; [
     bat
-    zoxide
     fzf
     fd
     ripgrep
@@ -128,6 +127,12 @@ in
   #     };
   #   };
   # };
+
+  # ── zoxide (smarter `cd`; adds the `z` function to bash) ──────────────────
+  programs.zoxide = {
+    enable = true;
+    enableBashIntegration = true;
+  };
 
   # ── direnv hook (so `direnv allow` works in every new shell) ──────────────
   programs.direnv = {
