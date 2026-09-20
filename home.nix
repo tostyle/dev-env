@@ -57,7 +57,7 @@ in
   programs.bash = {
     enable = true;
     initExtra = ''
-      export PATH="$HOME/.nix-profile/bin:$PATH"
+      export PATH="$HOME/.nix-profile/bin:$HOME/.local/bin:$PATH"
       export PNPM_HOME="$HOME/.local/share/pnpm"
       export PATH="$PNPM_HOME:$PATH"
       export NPM_CONFIG_PREFIX="$HOME/.local"
