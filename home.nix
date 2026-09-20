@@ -70,6 +70,18 @@ in
       # if [[ ! -f /tmp/.ansible-bootstrapped ]]; then
       #   cd ~/dotfiles && ansible-playbook ansible/site.yml && touch /tmp/.ansible-bootstrapped
       # fi
+
+      envsource() {
+        local env_file="''${1:-.env}"
+        if [[ ! -f "$env_file" ]]; then
+          echo "envsource: file not found: $env_file" >&2
+          return 1
+        fi
+        set -a
+        source "$env_file"
+        set +a
+        awk -F'=' '{print "export " $1 "=****"}' "$env_file"
+      }
     '';
   };
 
@@ -85,7 +97,9 @@ in
     fd
     ripgrep
     jq
+    sqlite
     curl
+    cron
     htop
     # podman
     bun

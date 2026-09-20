@@ -1,0 +1,77 @@
+---
+- name: Start Hermes messaging gateway
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Check if hermes is installed
+      ansible.builtin.shell:
+        cmd: "command -v hermes"
+        executable: /bin/bash
+      register: hermes_bin
+      changed_when: false
+      failed_when: false
+      become: false
+
+    - name: Detect container environment
+      ansible.builtin.shell:
+        cmd: >-
+          test -e /.dockerenv || test -e /run/.containerenv
+          || test -n "${KUBERNETES_SERVICE_HOST:-}"
+          || grep -qE '(docker|podman|/lxc/|kubepods|containerd|crio)' /proc/1/cgroup
+          || awk '$5=="/"' /proc/self/mountinfo | grep -qE '(kubepods|containerd|crio)'
+        executable: /bin/bash
+      register: container_check
+      changed_when: false
+      failed_when: false
+      become: false
+
+    - name: Check gateway status
+      ansible.builtin.shell:
+        cmd: "hermes gateway status"
+        executable: /bin/bash
+      register: gateway_status
+      changed_when: false
+      failed_when: false
+      become: false
+      environment:
+        HOME: "{{ lookup('env', 'HOME') }}"
+
+    - name: Ensure ~/.hermes/logs directory exists
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/.hermes/logs"
+        state: directory
+        mode: "0700"
+      become: false
+      when:
+        - hermes_bin.rc | default(1) == 0
+        - container_check.rc | default(1) == 0
+
+    - name: Start gateway in background (container mode)
+      ansible.builtin.shell:
+        cmd: >-
+          nohup hermes gateway run < /dev/null
+          >> "{{ lookup('env', 'HOME') }}/.hermes/logs/gateway.log" 2>&1 &
+        executable: /bin/bash
+      when:
+        - hermes_bin.rc | default(1) == 0
+        - container_check.rc | default(1) == 0
+        - "'not running' in gateway_status.stdout | default('')"
+      become: false
+      changed_when: true
+      environment:
+        HOME: "{{ lookup('env', 'HOME') }}"
+
+    - name: Start gateway service (host mode)
+      ansible.builtin.shell:
+        cmd: "hermes gateway start"
+        executable: /bin/bash
+      when:
+        - hermes_bin.rc | default(1) == 0
+        - container_check.rc | default(0) != 0
+        - "'not running' in gateway_status.stdout | default('')"
+      become: false
+      changed_when: true
+      environment:
+        HOME: "{{ lookup('env', 'HOME') }}"

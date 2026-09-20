@@ -7,6 +7,7 @@ ansible/
   site.yml             # master playbook — runs everything
   ssh-keys.yml         # generates ~/.ssh/id_coder key
   install-packages.yml # installs system packages on non-Nix machines
+  hermes-gateway.yml   # starts the Hermes messaging gateway
 ```
 
 **Pattern:** one playbook per concern, `site.yml` glues them together. Add more playbooks (e.g. `dotfiles.yml`, `git.yml`) and import them in `site.yml`.
@@ -76,3 +77,4 @@ On plain Linux machines, add it manually to `~/.bashrc`.
 | `home-manager` | Nix only — not installed via Ansible |
 | `pi`, `herdr` | Nix only (llm-agents.nix) — not installed via Ansible. `pi-config.yml` copies `models.json` to `~/.pi/agent`; `herdr-config.yml` copies `config.toml` to `~/.config/herdr` |
 | `hermes` | `hermes-agent.yml` — official installer (`curl -fsSL https://hermes-agent.nousresearch.com/install.sh \| bash`), skipped when `hermes` is already on PATH |
+| `hermes gateway` | `hermes-gateway.yml` — ensures the messaging gateway is running: `hermes gateway start` on hosts, `nohup hermes gateway run` (logging to `~/.hermes/logs/gateway.log`) inside containers (detected via `/.dockerenv`, `/run/.containerenv`, `KUBERNETES_SERVICE_HOST`, `/proc/1/cgroup`, root mountinfo). Skipped when the gateway is already running or `hermes` is not on PATH |
