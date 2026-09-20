@@ -18,6 +18,3 @@ new_tab = ["prefix+c", "ctrl+alt+c"]
 split_vertical = ["prefix+v"]
 split_horizontal = ["prefix+minus"]
 zoom = ["prefix+z", "ctrl+alt+z"]
-
-[remote]
-agent_reporting = "on"
