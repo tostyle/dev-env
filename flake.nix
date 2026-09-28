@@ -33,9 +33,14 @@
       # NOTE: hermes-agent pins its own nixpkgs; do not follow ours to keep
       # its uv2nix/python builds from breaking on our nixos-unstable pin.
     };
+    # Flyline: Bash readline replacement
+    flyline = {
+      url = "github:HalFrgrd/flyline";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, flake-utils, home-manager, llm-agents, hermes-agent }:
+  outputs = { self, nixpkgs, flake-utils, home-manager, llm-agents, hermes-agent, flyline }:
     let
       # ── Change these two values to match your machine ──────────────────────
       mySystem  = "aarch64-linux"; # or "x86_64-linux", "aarch64-darwin", "x86_64-darwin"
@@ -93,7 +98,7 @@
           pkgs = nixpkgs.legacyPackages.${mySystem};
           extraSpecialArgs = {
             inherit myUser;
-            inherit llm-agents hermes-agent;
+            inherit llm-agents hermes-agent flyline;
             gitName  = env.gitName  or myUser;
             gitEmail = env.gitEmail or myUser;
           };

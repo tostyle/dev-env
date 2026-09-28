@@ -4,10 +4,12 @@
 # Activate with:
 #   home-manager switch --flake .#<username>
 
-{ pkgs, myUser, lib, gitName, gitEmail, llm-agents, ... }:
+{ pkgs, myUser, lib, gitName, gitEmail, llm-agents, flyline, ... }:
 
 let
   agentPkgs = llm-agents.packages.${pkgs.system};
+  flylinePkg = flyline.packages.${pkgs.system}.default;
+  flylineLib = "${flylinePkg}/lib/libflyline${pkgs.stdenv.hostPlatform.extensions.sharedLibrary}";
 in
 {
   # imports = [ hermes-agent.homeManagerModules.default ];
@@ -56,11 +58,21 @@ in
 
   programs.bash = {
     enable = true;
+    shellAliases = {
+      ls  = "eza --group-directories-first";
+      ll  = "eza -la --group-directories-first";
+      lt  = "eza --tree";
+    };
     initExtra = ''
       export PATH="$HOME/.nix-profile/bin:$HOME/.local/bin:$PATH"
       export PNPM_HOME="$HOME/.local/share/pnpm"
       export PATH="$PNPM_HOME:$PATH"
       export NPM_CONFIG_PREFIX="$HOME/.local"
+
+      # Flyline: load the Bash readline replacement in interactive shells
+      if [[ $- == *i* ]]; then
+        enable -f ${flylineLib} flyline 2>/dev/null || true
+      fi
       # if [[ ! -f /tmp/.hm-bootstrapped ]]; then
       #   cd ~/dotfiles && bash bootstrap.sh && touch /tmp/.hm-bootstrapped
       # fi
@@ -119,6 +131,8 @@ in
     lazydocker
     neovim
     xclip
+    eza
+    flylinePkg
   ]
   # AI coding agents from github:numtide/llm-agents.nix
   # (pi replaces the deprecated @mariozechner/pi-coding-agent custom derivation)
@@ -152,6 +166,16 @@ in
   programs.direnv = {
     enable            = true;
     nix-direnv.enable = true;  # caches nix develop shells
+  };
+
+  # ── Starship prompt ───────────────────────────────────────────────────────
+  programs.starship = {
+    enable = true;
+    enableBashIntegration = true;
+    settings = {
+      character.success_symbol = "[➜](bold green)";
+      character.error_symbol   = "[✗](bold red)";
+    };
   };
 
   # ── Hermes Agent (installed via Ansible) ────────────────────────────────
