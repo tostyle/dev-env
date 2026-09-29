@@ -8,6 +8,7 @@
 
 - import_playbook: ssh-keys.yml
 - import_playbook: install-packages.yml
+- import_playbook: leaf.yml
 - import_playbook: tmux-config.yml
 - import_playbook: nvim-config.yml
 - import_playbook: herdr-config.yml

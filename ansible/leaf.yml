@@ -1,0 +1,45 @@
+---
+- name: Install leaf (terminal markdown viewer) via official installer
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    leaf_install_url: "https://raw.githubusercontent.com/RivoLink/leaf/main/scripts/install.sh"
+    # Set to true to re-run the installer and update leaf to the latest release
+    leaf_force_update: false
+
+  tasks:
+    - name: Check if leaf is already installed
+      ansible.builtin.shell:
+        cmd: "command -v leaf"
+        executable: /bin/bash
+      register: leaf_bin
+      changed_when: false
+      failed_when: false
+      become: false
+
+    - name: Install leaf (curl | sh)
+      ansible.builtin.shell:
+        cmd: "curl -fsSL {{ leaf_install_url }} | sh"
+        executable: /bin/bash
+      when: leaf_force_update or leaf_bin.rc != 0
+      become: false
+      changed_when: true
+      environment:
+        HOME: "{{ lookup('env', 'HOME') }}"
+
+    - name: Verify leaf installation
+      ansible.builtin.command:
+        cmd: "leaf --version"
+      register: leaf_version
+      changed_when: false
+      failed_when: false
+      become: false
+
+    - name: Show leaf version
+      ansible.builtin.debug:
+        msg: >-
+          {{ 'leaf installed: ' + leaf_version.stdout
+             if leaf_version.rc == 0
+             else 'leaf not found on PATH — add ~/.local/bin to PATH and re-login' }}
