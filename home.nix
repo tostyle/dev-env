@@ -62,6 +62,8 @@ in
       ls  = "eza --group-directories-first";
       ll  = "eza -la --group-directories-first";
       lt  = "eza --tree";
+      supervisord   = "supervisord -c $HOME/.config/supervisor/supervisord.conf";
+      supervisorctl = "supervisorctl -c $HOME/.config/supervisor/supervisord.conf";
     };
     initExtra = ''
       export PATH="$HOME/.nix-profile/bin:$HOME/.local/bin:$PATH"
@@ -72,6 +74,7 @@ in
       # Flyline: load the Bash readline replacement in interactive shells
       if [[ $- == *i* ]]; then
         enable -f ${flylineLib} flyline 2>/dev/null || true
+        flyline suggestions --auto-suggest false --auto-suggest-inline true
       fi
       # if [[ ! -f /tmp/.hm-bootstrapped ]]; then
       #   cd ~/dotfiles && bash bootstrap.sh && touch /tmp/.hm-bootstrapped
@@ -82,6 +85,11 @@ in
       # if [[ ! -f /tmp/.ansible-bootstrapped ]]; then
       #   cd ~/dotfiles && ansible-playbook ansible/site.yml && touch /tmp/.ansible-bootstrapped
       # fi
+
+      # OSC 52 clipboard — works over SSH on headless boxes (no X needed);
+      # the terminal (VS Code, kitty, Alacritty, ...) writes to the local clipboard.
+      # Usage: echo 'content' | clip
+      clip() { printf '\033]52;c;%s\007' "$(base64 -w0)"; }
 
       envsource() {
         local env_file="''${1:-.env}"
@@ -131,7 +139,11 @@ in
     lazydocker
     neovim
     xclip
+    httpie
     eza
+    uv
+    stow
+    python313Packages.supervisor
     flylinePkg
   ]
   # AI coding agents from github:numtide/llm-agents.nix
@@ -143,6 +155,38 @@ in
   # Hermes Agent CLI is installed via Ansible (ansible/hermes-agent.yml) using
   # the official installer: curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
   ;
+
+  # ── Supervisor (user-scoped process manager) ────────────────────────────
+  # Config lives in $HOME: supervisord's default search path does NOT include
+  # ~/.config, so the bash aliases below always pass -c explicitly.
+  xdg.configFile."supervisor/supervisord.conf".text = ''
+    [supervisord]
+    logfile=%(ENV_HOME)s/.local/state/supervisor/supervisord.log
+    logfile_maxbytes=10MB
+    logfile_backups=5
+    pidfile=%(ENV_HOME)s/.local/state/supervisor/supervisord.pid
+    childlogdir=%(ENV_HOME)s/.local/state/supervisor
+    nodaemon=false
+
+    [unix_http_server]
+    file=%(ENV_HOME)s/.local/state/supervisor/supervisor.sock
+
+    [rpcinterface:supervisor]
+    supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+
+    [supervisorctl]
+    serverurl=unix://%(ENV_HOME)s/.local/state/supervisor/supervisor.sock
+
+    [include]
+    # Drop per-program .conf files here (e.g. myapp.conf with a [program:x] section)
+    files = %(ENV_HOME)s/.config/supervisor/conf.d/*.conf
+  '';
+
+  # supervisord refuses to start if log/sock dirs don't exist; conf.d is an
+  # include target so it must exist too. HM can't manage empty dirs, so mkdir.
+  home.activation.supervisorDirs = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    mkdir -p "$HOME/.local/state/supervisor" "$HOME/.config/supervisor/conf.d"
+  '';
 
   # ── SSH ───────────────────────────────────────────────────────────────────
   # programs.ssh = {
