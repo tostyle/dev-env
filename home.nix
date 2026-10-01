@@ -56,6 +56,9 @@ in
     '';
   };
 
+  # These PATH guards let the Hermes installer's shell-wiring step detect
+  # ~/.local/bin is already set up (it greps for `PATH=.*\.local/bin`) and
+  # skip appending to these files — which are read-only HM store symlinks.
   programs.bash = {
     enable = true;
     shellAliases = {
@@ -65,6 +68,12 @@ in
       supervisord   = "supervisord -c $HOME/.config/supervisor/supervisord.conf";
       supervisorctl = "supervisorctl -c $HOME/.config/supervisor/supervisord.conf";
     };
+    profileExtra = ''
+      case ":$PATH:" in *":$HOME/.local/bin:"*) ;; *) export PATH="$HOME/.local/bin:$PATH" ;; esac
+    '';
+    # HM's .bash_profile is a fixed template (sources .profile/.bashrc) with no
+    # override option; force our own below (home.file.".bash_profile") so it
+    # carries the installer's PATH guard. Source lines match the HM default.
     initExtra = ''
       export PATH="$HOME/.nix-profile/bin:$HOME/.local/bin:$PATH"
       export PNPM_HOME="$HOME/.local/share/pnpm"
@@ -103,7 +112,21 @@ in
         awk -F'=' '{print "export " $1 "=****"}' "$env_file"
       }
     '';
+
+    # HM's .bash_profile is a fixed template (sources .profile/.bashrc) with no
+    # override option; force our own so it carries the installer's PATH guard.
+    # Source lines match the HM default.
   };
+
+  home.file.".bash_profile".source = lib.mkForce (pkgs.writeText "bash_profile" ''
+      # include .profile if it exists
+      [[ -f ~/.profile ]] && . ~/.profile
+
+      # include .bashrc if it exists
+      [[ -f ~/.bashrc ]] && . ~/.bashrc
+
+      case ":$PATH:" in *":$HOME/.local/bin:"*) ;; *) export PATH="$HOME/.local/bin:$PATH" ;; esac
+    '');
 
   programs.tmux = {
     enable = false;
