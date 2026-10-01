@@ -167,6 +167,13 @@ in
     uv
     stow
     python313Packages.supervisor
+    # sctl: supervisorctl with the config path baked in, so it works in
+    # non-interactive shells/scripts too (bash aliases don't expand there).
+    # Interactive shells already alias supervisorctl itself.
+    (pkgs.writeShellScriptBin "sctl" ''
+      exec ${pkgs.python313Packages.supervisor}/bin/supervisorctl \
+        -c "$HOME/.config/supervisor/supervisord.conf" "$@"
+    '')
     flylinePkg
   ]
   # AI coding agents from github:numtide/llm-agents.nix
