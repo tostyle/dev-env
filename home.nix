@@ -23,6 +23,7 @@ in
   # ── Git ───────────────────────────────────────────────────────────────────
   programs.git = {
     enable    = true;
+    lfs.enable = true; # installs git-lfs and wires up its clean/smudge filters
     settings = {
       user.name  = gitName;
       user.email = gitEmail;
@@ -163,6 +164,7 @@ in
     neovim
     xclip
     httpie
+    rclone
     eza
     uv
     stow
